@@ -1,5 +1,9 @@
 package com.example.sidebarnav.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -54,15 +58,19 @@ fun HomeScreen(
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
                 )
-                Divider()
+                HorizontalDivider()
                 Spacer(Modifier.height(8.dp))
                 menuItems.forEach { item ->
                     NavigationDrawerItem(
                         label = { Text(item.label) },
                         selected = false,
                         onClick = {
-                            item.action()
-                            scope.launch { drawerState.close() }
+                            // 先关抽屉(带动画)，抽屉关完后再执行动作
+                            scope.launch {
+                                drawerState.close()
+                                // 等抽屉完全关闭后执行内容切换，避免被吞动画
+                                item.action()
+                            }
                         },
                         icon = { Icon(item.icon, contentDescription = null) },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -92,12 +100,19 @@ fun HomeScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    content,
-                    fontSize = 18.sp,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    modifier = Modifier.padding(24.dp)
-                )
+                // 内容切换加淡入淡出动画，避免生硬跳变
+                AnimatedContent(
+                    targetState = content,
+                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    label = "content"
+                ) { text ->
+                    Text(
+                        text,
+                        fontSize = 18.sp,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.padding(24.dp)
+                    )
+                }
             }
         }
     }
