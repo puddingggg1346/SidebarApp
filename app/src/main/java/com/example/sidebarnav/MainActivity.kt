@@ -24,15 +24,8 @@ class MainActivity : AppCompatActivity() {
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navView = findViewById<NavigationView>(R.id.nav_view)
         val tvContent = findViewById<TextView>(R.id.tv_content)
-        val navAccount = navView.menu.findItem(R.id.nav_account)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        fun updateAccountTitle() {
-            navAccount.title = if (Session.get().isLoggedIn)
-                "${Session.get().username}（退出）" else "账号（登录/注册）"
-        }
-        updateAccountTitle()
 
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -50,13 +43,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_account -> {
                     if (Session.get().isLoggedIn) {
                         Session.get().logout()
-                        updateAccountTitle()
                         Toast.makeText(this, "已退出登录", Toast.LENGTH_SHORT).show()
                     } else {
                         startActivity(Intent(this, LoginActivity::class.java))
                     }
                 }
             }
+            updateAccountTitle(navView)
             drawerLayout.closeDrawers()
             true
         }
@@ -64,23 +57,22 @@ class MainActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             drawerLayout.openDrawer(navView)
         }
+        updateAccountTitle(navView)
     }
 
-    override fun onResume() {
-        super.onResume()
-        val navAccount = findViewById<NavigationView>(R.id.nav_view).menu.findItem(R.id.nav_account)
-        navAccount.title = if (Session.get().isLoggedIn)
+    private fun updateAccountTitle(navView: NavigationView) {
+        val item = navView.menu.findItem(R.id.nav_account) ?: return
+        item.title = if (Session.get().isLoggedIn)
             "${Session.get().username}（退出）" else "账号（登录/注册）"
     }
 
     private fun toggleTheme() {
-        val current = resources.configuration.uiMode and
-                android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        val night = android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        val current = resources.configuration.uiMode and night
         val isDark = current == android.content.res.Configuration.UI_MODE_NIGHT_YES
         AppCompatDelegate.setDefaultNightMode(
             if (isDark) AppCompatDelegate.MODE_NIGHT_NO
             else AppCompatDelegate.MODE_NIGHT_YES
         )
-        Toast.makeText(this, if (isDark) "已切换浅色" else "已切换深色", Toast.LENGTH_SHORT).show()
     }
 }

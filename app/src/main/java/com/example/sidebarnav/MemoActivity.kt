@@ -1,6 +1,8 @@
 package com.example.sidebarnav
 
+import android.content.Context
 import android.os.Bundle
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,18 +19,18 @@ class MemoActivity : AppCompatActivity() {
     private val scope = CoroutineScope(Dispatchers.Main + Job())
     private val memos = mutableListOf<Memo>()
     private lateinit var adapter: MemoAdapter
+    private lateinit var ctx: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ctx = this
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (!Session.get().isLoggedIn) {
-            finish(); return
-        }
+        if (!Session.get().isLoggedIn) { finish(); return }
 
         adapter = MemoAdapter(memos, ::onEdit, ::onDelete)
         binding.rvMemos.layoutManager = LinearLayoutManager(this)
@@ -57,13 +59,13 @@ class MemoActivity : AppCompatActivity() {
             result.onSuccess {
                 memos.clear(); memos.addAll(it); adapter.notifyDataSetChanged()
             }.onFailure {
-                Toast.makeText(this, "加载失败: ${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, "加载失败: ${it.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun showEditDialog(memo: Memo?) {
-        val input = android.widget.EditText(this)
+        val input = EditText(this)
         input.hint = "输入备忘内容"
         input.setText(memo?.content ?: "")
         AlertDialog.Builder(this)
@@ -87,7 +89,7 @@ class MemoActivity : AppCompatActivity() {
                     com.example.sidebarnav.net.ApiClient.post("/memo", body).getBoolean("ok")
                 } catch (e: Exception) { false }
             }
-            if (ok) loadMemos() else Toast.makeText(this, "添加失败", Toast.LENGTH_SHORT).show()
+            if (ok) loadMemos() else Toast.makeText(ctx, "添加失败", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -107,7 +109,7 @@ class MemoActivity : AppCompatActivity() {
                     }
                     if (ok) {
                         memos.remove(memo); adapter.notifyDataSetChanged()
-                    } else Toast.makeText(this, "删除失败", Toast.LENGTH_SHORT).show()
+                    } else Toast.makeText(ctx, "删除失败", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("取消", null)
@@ -122,7 +124,7 @@ class MemoActivity : AppCompatActivity() {
                     com.example.sidebarnav.net.ApiClient.put("/memo/$id", body).getBoolean("ok")
                 } catch (e: Exception) { false }
             }
-            if (ok) loadMemos() else Toast.makeText(this, "更新失败", Toast.LENGTH_SHORT).show()
+            if (ok) loadMemos() else Toast.makeText(ctx, "更新失败", Toast.LENGTH_SHORT).show()
         }
     }
 
