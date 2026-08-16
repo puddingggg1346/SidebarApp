@@ -1,5 +1,7 @@
 package com.example.sidebarnav
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.widget.EditText
@@ -32,7 +34,7 @@ class MemoActivity : AppCompatActivity() {
 
         if (!Session.get().isLoggedIn) { finish(); return }
 
-        adapter = MemoAdapter(memos, ::onEdit, ::onDelete)
+        adapter = MemoAdapter(memos, ::onCopy, ::onEdit, ::onDelete)
         binding.rvMemos.layoutManager = LinearLayoutManager(this)
         binding.rvMemos.adapter = adapter
 
@@ -62,6 +64,12 @@ class MemoActivity : AppCompatActivity() {
                 Toast.makeText(ctx, "加载失败: ${it.message}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun onCopy(memo: Memo) {
+        val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        cm.setPrimaryClip(ClipData.newPlainText("memo", memo.content))
+        Toast.makeText(ctx, "已复制", Toast.LENGTH_SHORT).show()
     }
 
     private fun showEditDialog(memo: Memo?) {
