@@ -4,6 +4,8 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,8 +34,7 @@ fun LoginScreen(
                 title = { Text("账号登录") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack
-                            .let { androidx.compose.material3.Icon(it, contentDescription = "返回") }
+                        Icon(Icons.Default.ArrowBack, contentDescription = "返回")
                     }
                 }
             )
@@ -118,7 +119,7 @@ fun LoginScreen(
                                     .put("password", password)
                                 val resp = com.example.sidebarnav.net.ApiClient.post("/register", body)
                                 if (resp.getBoolean("ok")) {
-                                    // 注册成功，自动登录拿 user_id
+                                    // 注册成功，自动登录
                                     val loginBody = org.json.JSONObject()
                                         .put("username", username.trim())
                                         .put("password", password)

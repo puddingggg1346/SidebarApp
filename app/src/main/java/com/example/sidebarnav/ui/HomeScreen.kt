@@ -1,7 +1,6 @@
 package com.example.sidebarnav.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -12,6 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 
 data class MenuItem(
     val label: String,
@@ -54,7 +54,7 @@ fun HomeScreen(
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
                 )
-                HorizontalDivider()
+                Divider()
                 Spacer(Modifier.height(8.dp))
                 menuItems.forEach { item ->
                     NavigationDrawerItem(
