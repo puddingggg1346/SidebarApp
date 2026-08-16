@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.sidebarnav.data.Session
+import com.example.sidebarnav.ui.theme.SidebarAppTheme
 import kotlinx.coroutines.*
 import org.json.JSONObject
 
@@ -29,7 +30,7 @@ class MemoActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            SidebarAppTheme {
                 MemoScreen()
             }
         }
